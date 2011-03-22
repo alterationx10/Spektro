@@ -11,7 +11,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <iostream>
-#include <sting>
+using namespace std;
+#include <string>
 
 int main(int argc, char *argv[]) {
 
@@ -23,13 +24,13 @@ int main(int argc, char *argv[]) {
 
 
 	// Initialize capture from camera
-	cvCapture* CAMERA = cvCaptureFromCAM(CAMERA_DEVICE_NUMBER);
+	CvCapture* CAMERA = cvCaptureFromCAM(CAMERA_DEVICE_NUMBER);
 
 	// Wait for the camera to start up / focus
-	delay(CAMERA_WARM_UP_TIME);
+	sleep(CAMERA_WARM_UP_TIME);
 
 	// Make sure we are capturing at the right resolution
-	cvQueryFram(CAMERA);
+	cvQueryFrame(CAMERA);
 	int FRAME_HEIGHT = (int) cvGetCaptureProperty(CAMERA, CV_CAP_PROP_FRAME_HEIGHT);
 	int FRAME_WIDTH = (int) cvGetCaptureProperty(CAMERA, CV_CAP_PROP_FRAME_WIDTH);
 	cout << "Capturing at " << FRAME_WIDTH << "x" << FRAME_HEIGHT << "\n";
