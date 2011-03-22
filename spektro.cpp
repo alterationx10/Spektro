@@ -28,7 +28,8 @@ int main(int argc, char *argv[]) {
 	int CAMERA_WIDTH_RESOLUTION = 1280;
 	int CAMERA_HEIGHT_RESOLUTION = 800;
 
-	// Ignore the strange warnings...
+	// Can't seem to supress the error message, so tell
+	// the user it's safe to ignore...
 	cout << "It is safe to ignore the 'VIDIOC_QUERYMENU: Invalid argument' warnings...\n";
 		
 	// Initialize capture from camera
@@ -58,7 +59,10 @@ int main(int argc, char *argv[]) {
 	cvShowImage("mainWin", SAMPLE);
 	cvWaitKey(0);
 
-	// Convert it to Grey
+	// Lets save an image
+	cvSaveImage("test.bmp",SAMPLE);
+
+	// Convert it to Grey ; will use this later
 	IplImage* GREY_SAMPLE = cvCreateImage(cvSize(FRAME_WIDTH,FRAME_HEIGHT),IPL_DEPTH_8U,1);
 	cvCvtColor(SAMPLE,GREY_SAMPLE,CV_RGB2GRAY);
 
@@ -68,6 +72,7 @@ int main(int argc, char *argv[]) {
 	cvShowImage("mainWin", GREY_SAMPLE);
 	cvWaitKey(0);
 
+	///////////////////////////////////////
 	// Lets trying recording a movie just for fun...
 	// It might be advantagious to record a movie and use hat as the "samples"...
      	int isColor = 1;
@@ -87,16 +92,20 @@ int main(int argc, char *argv[]) {
 	}
 	// Release the writer
 	cvReleaseVideoWriter(&writer);
+	/////////////////////////////////
 	  
 	// Draw our calibration line to make sure its right
-	//cvLine(GREY_SAMPLE, cvPoint(100,100), cvPoint(200,200), cvScalar(0,255,0), 1);
+	cvLine(SAMPLE, cvPoint(357,535), cvPoint(883,450), cvScalar(0,255,0), 1);
 	//Add in our equation later...
 
 	// Lets see the image
-	//cvNamedWindow("mainWin", CV_WINDOW_AUTOSIZE);
-	//cvMoveWindow("mainWin", 100, 100);
-	//cvShowImage("mainWin", GREY_SAMPLE);
-	//cvWaitKey(0);
+	cvNamedWindow("mainWin", CV_WINDOW_AUTOSIZE);
+	cvMoveWindow("mainWin", 100, 100);
+	cvShowImage("mainWin", SAMPLE);
+	cvWaitKey(0);
+
+	// Lets save an image
+	cvSaveImage("test-line.bmp",SAMPLE);
 
 	// Turn the camera off
 	cvReleaseCapture(&CAMERA);
