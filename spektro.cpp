@@ -26,7 +26,11 @@ int main(int argc, char *argv[]) {
 	// Notes to self
 	// cvGrabFrame captures a frame
 	// cvRetrieveFrame retrieves the captured frame
-	
+
+	// Ge the Number of Samples to take from the command line
+	int NSAMPLES=0;
+	NSAMPLES = atoi(argv[1]);
+
 	IplImage* SAMPLE = 0; 
 	int SAMPLE_HEIGHT,SAMPLE_WIDTH;
 	int CAMERA_WARM_UP_TIME = 3; // Seconds, not milliseconds
@@ -135,7 +139,7 @@ int main(int argc, char *argv[]) {
 	// Lets try doing a loop
 	//IplImage* GREY_SAMPLE = cvCreateImage(cvSize(FRAME_WIDTH,FRAME_HEIGHT),IPL_DEPTH_8U,1);
 	CvScalar pixel;
-	int NSAMPLES = 1000;
+	cout << "We are using " << NSAMPLES << " images \n";
   	for (int i=0; i<NSAMPLES; i++) {
   		cvGrabFrame(CAMERA);
   		SAMPLE=cvRetrieveFrame(CAMERA);
@@ -151,15 +155,15 @@ int main(int argc, char *argv[]) {
 			AVERAGE_B[x-230] = AVERAGE_B[x-230] + pixel.val[0];
 			AVERAGE_G[x-230] = AVERAGE_G[x-230] + pixel.val[1];
 			AVERAGE_R[x-230] = AVERAGE_R[x-230] + pixel.val[2];
-			AVERAGE[x-230] = AVERAGE[x-230] + AVERAGE_B[x-230] + AVERAGE_G[x-230] + AVERAGE_R[x-230];
+			AVERAGE[x-230] = AVERAGE[x-230] + (AVERAGE_B[x-230] + AVERAGE_G[x-230] + AVERAGE_R[x-230])/3;
 			// Move on to next image :-)
 		}
   	}
 	// Divide by number of samples for averaging
   	for (int i=0; i<771; i++) {
-		AVERAGE_B[i] = AVERAGE_B[i] / NSAMPLES ;
-		AVERAGE_G[i] = AVERAGE_G[i] / NSAMPLES ;
-		AVERAGE_R[i] = AVERAGE_R[i] / NSAMPLES ;
+		//AVERAGE_B[i] = AVERAGE_B[i] / NSAMPLES ;
+		//AVERAGE_G[i] = AVERAGE_G[i] / NSAMPLES ;
+		//AVERAGE_R[i] = AVERAGE_R[i] / NSAMPLES ;
 		AVERAGE[i] = AVERAGE[i] / NSAMPLES ;
 		// spit it out while we're at it
 		//cout << i << " " << AVERAGE_B[i] << " " << AVERAGE_G[i] << " " << AVERAGE_R[i] << "\n";
