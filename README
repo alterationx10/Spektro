@@ -1,6 +1,5 @@
 This is code to automate my home-made spectrometer. 
 
-It makes system calls to imagemagick and gstreamer packages.
+It is in C/C++
 
-Working a a C++ version that uses opencv to do image work,
-instead of making system calls in fortran.
+Required lib: opencv
