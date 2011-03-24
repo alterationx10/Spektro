@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
   		cvGrabFrame(CAMERA);				//
   		SAMPLE=cvRetrieveFrame(CAMERA);			//
 		// Go over the same loop as in acquire data	//
-		for (int x=0; x <1281; x++) {			//
+		for (int x=230; x <1001; x++) {			//
 			int c_y;				//
 			c_y = main_line(x);			//
 			CALIBRATION = cvGet2D(SAMPLE,c_y,x);	//
@@ -149,9 +149,7 @@ int main(int argc, char *argv[]) {
   		cvGrabFrame(CAMERA);									//
   		SAMPLE=cvRetrieveFrame(CAMERA);								//
 		// We want to pick x,y values for from x = 230 to 1000 					//
-		// Edit: use 0 to 1280, outer bounds will show noise reduction 				//
-		// as well as be useful for data smoothing later.	 				//
-		for (int x=0; x <1281; x++) {								//
+		for (int x=230; x <1001; x++) {								//
 			// What y value do we need?							//
 			int y;										//
 			y = main_line(x);								//
