@@ -16,11 +16,35 @@ using namespace std;
 
 int main_line (int x) {
 	int y;
-	y = (0.161597*x - 592.69)*-1;
+	//y = (0.161597*x - 592.69)*-1;
+	y = (0.172144*x - 590.512)*-1;
 	return(y);
 	//This needs work...
 }
 
+// Functions for easy IN/OUT ///////////////////////////////////
+
+// Clear the screen (LINUX)
+void clear() {
+	system("clear");
+}
+
+// Wait for a Return
+void wfr() {
+	cin.ignore(numeric_limits<streamsize>::max(),'\n');
+}
+
+// Wait For Return AND clear
+void wfrc(){
+	cin.ignore(numeric_limits<streamsize>::max(),'\n');
+	system("clear");
+}
+
+// Easily print messages to user
+void echo(string info){
+	cout <<  info  << endl;
+}
+////////////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[]) {
 
@@ -38,17 +62,37 @@ int main(int argc, char *argv[]) {
 	int RECORD_MOVIE = 0; 
 	int TAKE_PICTURE = 0;
 	int RECORD_CALIBRATION = 0;
+	int ACQUIRE_DATA = 1;
 	int SMOOTH_DATA = 0; // Will add later
 	
 	// Set up an array to hold our data
 	double AVERAGE[770];
+	double NOISE[770];
+	double BLANK[770];
+	double SAMPLE[770];
+	double ABSORBANCE[770];
 	// Zero the AVERAGE array
 	for (int i=0; i<771; i++) {
 		AVERAGE[i] = 0;
 	}
 	///////////////////////////////////////////////////////////////////////////////////
-	
-	// Parse command line options 
+
+	// Parse command line options
+	//
+	// Help the user out
+	if (0) {
+	if (argc = 1) {
+	       cout << "Program options are:\n";
+	       cout << "run=# (of samples to average)\n";
+	       cout << "movie=1 (to output a 5 sec. video: sample.avi)\n";
+	       cout << "picture=1 (to output a picture: sample.bmp)\n";
+	       cout << "calibrate=1 (to output a picture with the calibration line drawn on it)\n)";
+	       cout << "smooth=1 (to run a data averaging algorithm on the data to smooth it out);\n)";
+	       exit(0);
+	}
+	}
+
+       			       
 	int NSAMPLES=0;
 	NSAMPLES = atoi(argv[1]);
 	// Will add more options later so user can toggle the above logical values
@@ -143,6 +187,7 @@ int main(int argc, char *argv[]) {
 
 
 	// Acquire data //////////////////////////////////////////////////////////////////////////////////
+	if (ACQUIRE_DATA) {										//
 	CvScalar pixel;											//
 	cout << "# We are using " << NSAMPLES << " images \n";						//
   	for (int i=0; i<NSAMPLES; i++) {								//
@@ -166,6 +211,7 @@ int main(int argc, char *argv[]) {
 		// Echo output to std out								//
 		// capture with | tee for convenient file sample naming					//
 		cout << i << " " << AVERAGE[i] << "\n";							//
+	}												//
 	}												//
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
