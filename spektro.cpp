@@ -66,14 +66,16 @@ int main(int argc, char *argv[]) {
 	int SMOOTH_DATA = 0; // Will add later
 	
 	// Set up an array to hold our data
-	double AVERAGE[770];
 	double NOISE[770];
 	double BLANK[770];
 	double SAMPLE[770];
 	double ABSORBANCE[770];
 	// Zero the AVERAGE array
 	for (int i=0; i<771; i++) {
-		AVERAGE[i] = 0;
+		NOISE[i] 	= 0;
+		BLANK[i] 	= 0;
+		SAMPLE[i] 	= 0;
+		ABSORBANCE[i] 	= 0;
 	}
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -185,7 +187,12 @@ int main(int argc, char *argv[]) {
 	//////////////////////////////////////////////////////////
 		
 
-
+	// Will make this a function later, brute force it for now
+	//
+	// We will measure an average of the noise from the detector
+	clear();
+	echo("Ensure that the lamp is OFF");
+	wfr();
 	// Acquire data //////////////////////////////////////////////////////////////////////////////////
 	if (ACQUIRE_DATA) {										//
 	CvScalar pixel;											//
@@ -201,22 +208,96 @@ int main(int argc, char *argv[]) {
 			// Get the pixel value								//
 			pixel=cvGet2D(SAMPLE,y,x);							//
 			// Sum it up in an array							//
-			AVERAGE[x-230] = AVERAGE[x-230] + pixel.val[0] + pixel.val[1] + pixel.val[2] ; 	//
+			NOISE[x-230] = NOISE[x-230] + pixel.val[0] + pixel.val[1] + pixel.val[2] ; 	//
 		}											//
   	}												//
 	//												//
 	// Divide by number of samples for averaging							//
   	for (int i=0; i<771; i++) {									//
-		AVERAGE[i] = AVERAGE[i] / NSAMPLES ;							//
-		// Echo output to std out								//
-		// capture with | tee for convenient file sample naming					//
-		cout << i << " " << AVERAGE[i] << "\n";							//
+		NOISE[i] = NOISE[i] / NSAMPLES ;							//
 	}												//
 	}												//
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+	// Now the blank
+	clear();
+	echo("Ensure that the lamp is ON");
+	echo("Place in the BLANK");
+	wfr();
+	// Acquire data //////////////////////////////////////////////////////////////////////////////////
+	if (ACQUIRE_DATA) {										//
+	CvScalar pixel;											//
+	cout << "# We are using " << NSAMPLES << " images \n";						//
+  	for (int i=0; i<NSAMPLES; i++) {								//
+  		cvGrabFrame(CAMERA);									//
+  		SAMPLE=cvRetrieveFrame(CAMERA);								//
+		// We want to pick x,y values for from x = 230 to 1000 					//
+		for (int x=230; x <1001; x++) {								//
+			// What y value do we need?							//
+			int y;										//
+			y = main_line(x);								//
+			// Get the pixel value								//
+			pixel=cvGet2D(SAMPLE,y,x);							//
+			// Sum it up in an array							//
+			BLANK[x-230] = BLANK[x-230] + pixel.val[0] + pixel.val[1] + pixel.val[2] ; 	//
+		}											//
+  	}												//
+	//												//
+	// Divide by number of samples for averaging							//
+  	for (int i=0; i<771; i++) {									//
+		BLANK[i] = BLANK[i] / NSAMPLES ;							//
+	}												//
+	}												//
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Now the sample
+	clear();
+	echo("Remove the blank and place in the SAMPLE");
+	wfr();
+	// Acquire data //////////////////////////////////////////////////////////////////////////////////
+	if (ACQUIRE_DATA) {										//
+	CvScalar pixel;											//
+	cout << "# We are using " << NSAMPLES << " images \n";						//
+  	for (int i=0; i<NSAMPLES; i++) {								//
+  		cvGrabFrame(CAMERA);									//
+  		SAMPLE=cvRetrieveFrame(CAMERA);								//
+		// We want to pick x,y values for from x = 230 to 1000 					//
+		for (int x=230; x <1001; x++) {								//
+			// What y value do we need?							//
+			int y;										//
+			y = main_line(x);								//
+			// Get the pixel value								//
+			pixel=cvGet2D(SAMPLE,y,x);							//
+			// Sum it up in an array							//
+			SAMPLE[x-230] = SAMPLE[x-230] + pixel.val[0] + pixel.val[1] + pixel.val[2] ; 	//
+		}											//
+  	}												//
+	//												//
+	// Divide by number of samples for averaging							//
+  	for (int i=0; i<771; i++) {									//
+		SAMPLE[i] = SAMPLE[i] / NSAMPLES ;							//
+	}												//
+	}												//
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+
 	// Turn the camera off
 	cvReleaseCapture(&CAMERA);
+
+	// Data Processing 
+	//
+	// Subtract the noise from the blank and the sample
+	for (int i=0; i<771; i++) {
+			BLANK[i] = BLANK[i] - NOISE[i];
+			SAMPLE[i] = SAMPLE[i] - NOISE[i];
+	}
+
+	// Calculate the absorbance
+	for (int i=0; i<771; i++) {
+		//ABSORBANCE[i] = -log10( BLANK[i] / SAMPLE[i] )
+		cout << i << "\t" << -log10( BLANK[i] / SAMPLE[i] ) << "\n";
+	}
+
+	// Finished
 	return 0;
 }
