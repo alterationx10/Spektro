@@ -68,13 +68,13 @@ int main(int argc, char *argv[]) {
 	// Set up an array to hold our data
 	double NOISE[770];
 	double BLANK[770];
-	double SAMPLE[770];
+	double SAMPLE_DATA[770];
 	double ABSORBANCE[770];
 	// Zero the AVERAGE array
 	for (int i=0; i<771; i++) {
 		NOISE[i] 	= 0;
 		BLANK[i] 	= 0;
-		SAMPLE[i] 	= 0;
+		SAMPLE_DATA[i] 	= 0;
 		ABSORBANCE[i] 	= 0;
 	}
 	///////////////////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
 	cvWaitKey(0);					//
 	//						//
 	// Save the image				//
-	cvSaveImage("sample.bmp",SAMPLE);		//
+	cvSaveImage("SAMPLE.bmp",SAMPLE);		//
 	}						//
 	//////////////////////////////////////////////////
 
@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
 		CvScalar CALIBRATION;				//
 		// Take a picture				//
   		cvGrabFrame(CAMERA);				//
-  		SAMPLE=cvRetrieveFrame(CAMERA);			//
+  		SAMPLE=cvRetrieveFrame(CAMERA);		//
 		// Go over the same loop as in acquire data	//
 		for (int x=230; x <1001; x++) {			//
 			int c_y;				//
@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
 	//												//
 	// Divide by number of samples for averaging							//
   	for (int i=0; i<771; i++) {									//
-		NOISE[i] = NOISE[i] / NSAMPLES ;							//
+		NOISE[i] = NOISE[i] / (double) NSAMPLES ;							//
 	}												//
 	}												//
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -246,7 +246,7 @@ int main(int argc, char *argv[]) {
 	//												//
 	// Divide by number of samples for averaging							//
   	for (int i=0; i<771; i++) {									//
-		BLANK[i] = BLANK[i] / NSAMPLES ;							//
+		BLANK[i] = BLANK[i] / (double) NSAMPLES ;							//
 	}												//
 	}												//
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,13 +270,14 @@ int main(int argc, char *argv[]) {
 			// Get the pixel value								//
 			pixel=cvGet2D(SAMPLE,y,x);							//
 			// Sum it up in an array							//
-			SAMPLE[x-230] = SAMPLE[x-230] + pixel.val[0] + pixel.val[1] + pixel.val[2] ; 	//
+			SAMPLE_DATA[x-230] = SAMPLE_DATA[x-230] 					//
+							+ pixel.val[0] + pixel.val[1] + pixel.val[2] ; 	//
 		}											//
   	}												//
 	//												//
 	// Divide by number of samples for averaging							//
   	for (int i=0; i<771; i++) {									//
-		SAMPLE[i] = SAMPLE[i] / NSAMPLES ;							//
+		SAMPLE_DATA[i] = SAMPLE_DATA[i] / (double) NSAMPLES ;						//
 	}												//
 	}												//
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -289,13 +290,13 @@ int main(int argc, char *argv[]) {
 	// Subtract the noise from the blank and the sample
 	for (int i=0; i<771; i++) {
 			BLANK[i] = BLANK[i] - NOISE[i];
-			SAMPLE[i] = SAMPLE[i] - NOISE[i];
+			SAMPLE_DATA[i] = SAMPLE_DATA[i] / NOISE[i];
 	}
 
 	// Calculate the absorbance
 	for (int i=0; i<771; i++) {
 		//ABSORBANCE[i] = -log10( BLANK[i] / SAMPLE[i] )
-		cout << i << "\t" << -log10( BLANK[i] / SAMPLE[i] ) << "\n";
+		cout << i << "\t" << log10( BLANK[i] / SAMPLE_DATA[i] ) << "\n";
 	}
 
 	// Finished
